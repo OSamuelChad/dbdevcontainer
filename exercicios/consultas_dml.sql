@@ -67,3 +67,24 @@ UPDATE MedicoEspecialidade
 SET id_especialidade = '01'
 WHERE cpf_medico = '004'
   AND id_especialidade = '02';
+
+/* Observação: A consulta de Pedro I agendada para o dia 19-05-1783 foi apagada por cancelamento */
+DELETE FROM Agendamento
+WHERE cpf_paciente = (SELECT cpf_paciente FROM Pessoa WHERE nome = 'Pedro I') AND dh_consulta::date = '1783-05-19';
+
+/* Observação: As consultas agendadas para o médico com CPF 001 e com valor igual a 0 reais foram removidas */
+DELETE FROM Agendamento
+WHERE cpf_medico = '001' AND valor_consulta = 0.0;
+
+/* Observação: Os pacientes que possuiam plano de saúde e que não tinham telefone foram removidos */
+DELETE FROM Paciente
+WHERE plano_saude = TRUE
+    OR cpf_pessoa IN (SELECT cpf FROM Pessoa WHERE telefone IS NULL);
+
+/* Observação: O médico JJ Xavier foi deletado primeiro da tabela Agendamento */
+DELETE FROM Agendamento
+WHERE cpf_medico IN (SELECT cpf FROM Pessoa WHERE nome = 'JJ Xavier');
+
+/* Observação: O médico JJ Xavier foi removido da base de dados, considerando que o efeito ON CASCADE estava configurado */
+DELETE FROM Pessoa
+WHERE nome = 'JJ Xavier';
